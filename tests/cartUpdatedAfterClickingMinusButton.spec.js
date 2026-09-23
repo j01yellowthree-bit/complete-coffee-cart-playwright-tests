@@ -1,23 +1,39 @@
 import { test, expect } from '@playwright/test';
 
 test('Cart updated after clicking minus for drinks', async ({ page }) => {
-  /*
-  Test:
-    1. Open the Coffee Cart menu page https://coffee-cart.app/
-    2. Click on the "Cappuccino" cup
-    3. Click on the "Espresso" cup
-    4. Click one the "Cart" link
-    5. Wait for the URL https://coffee-cart.app/cart 
-    6. Assert that Espresso is visible in the cart
-    6. Click "-" for Espresso
-    7. Assert that Espresso is removed from the cart
-    9. Assert that Cappucion is viisble in the cart
-    10. Click - for Cappucion
-    11. Assert that Cappucion is removed from the cart
-    12. Assert the message "No coffee, go add some" is visible
-  
-  Tip: 
-    1. Use filter({hasText: "ItemName"}) to find the required drink row. 
-      Do not rely on the exact order of the drinks. 
-  */
+ 
+  //1. Open the Coffee Cart menu page https://coffee-cart.app/
+  await page.goto('https://coffee-cart.app/');
+
+  //2.Click on the "Cappuccino" cup
+  await page.locator('[aria-label="Cappuccino"]').click();
+
+  //3.Click on the "Espresso" cup
+  await page.locator('[aria-label="Espresso"]').click();
+
+  //4.Click one the "Cart" link
+  await page.getByRole('link', {name:'Cart'}).click();
+
+  //5.Wait for the URL https://coffee-cart.app/cart 
+  await page.waitForURL('https://coffee-cart.app/cart');
+
+  //6. Assert that Espresso is visible in the cart
+  await expect(page.getByRole('listitem').filter({ hasText: 'Espresso' })).toBeVisible();
+  //7.Click "-" for Espresso
+  await page.getByRole('button', { name: 'Remove one Espresso' }).click();
+
+  //8.Assert that Espresso is removed from the cart
+  await expect(page.getByRole('itemlist').filter({hasText:'Espresso'})).toBeHidden();
+
+  //9.Assert that Cappucion is viisble in the cart
+  await expect(page.getByRole('listitem').filter({hasText:'Cappuccino'})).toBeVisible();
+
+  //10.Click - for Cappucion
+  await page.getByRole('button', { name: 'Remove one Cappuccino' }).click();
+
+  //11.Assert that Cappucion is removed from the cart
+  await expect(page.getByRole('listitem').filter({ hasText: 'Cappuccino' })).toBeHidden();
+  // 12. Assert the message "No coffee, go add some." is visible
+await expect(page.getByText('No coffee, go add some.')).toBeVisible();
 });
+
